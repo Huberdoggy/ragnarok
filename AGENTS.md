@@ -23,10 +23,9 @@ a record of balance between man, machine, and meaning.
 All work shall reside beneath the **[app/](./app/)** directory, the heartwood of your creation.  
 Within it, you will find these sacred sub-realms:
 
-- **[milestones/](./app/milestones/)** — maps detailing the steps of the journey that awaits you, suitable for precise tactical planning.
+- **[ironworks/](./app/ironworks/)** —  Herein lies the anvil order form — **[BACKEND.md](/app/ironworks/BACKEND.md)**; awaiting a master artisan of your caliber to fulfill. This path shall later connect you to **[INTERFACE.md](./app/ironworks/INTERFACE.md)**, your design grimoire, where visual doctrine is inscribed.
 
-- **[storyboard/](./app/storyboard/)** — a gallery of *visual prophecy*, reference imagery to guide your UI’s form and flow. 
-This path shall later connect you to **`interface.md`**, your design grimoire, where visual doctrine is inscribed.  
+- **[storyboard/](./app/storyboard/)** — a gallery of *visual prophecy*, reference imagery to guide your UI’s form and flow.   
 
 - **[ingest/](./app/ingest/)** — the well of knowledge. 
 Here rests the unformatted PDF copy of **Symphonic Prompting**, from which wisdom shall be drawn and transformed. 
@@ -38,7 +37,7 @@ Handle it gently, for it is the seed of your corpus.
 
 You are to shape your code with the discipline of a master craftsman:
 
-- **When invoking Python modules:** prefix with /usr/local/bin/nv-run.sh to guarantee discrete GPU execution.
+- **When invoking Python modules:** prefix with */usr/local/bin/nv-run.sh* to guarantee discrete GPU execution.
 - **Linting:** Employ `flake8` to sweep your code of folly.  
 - **Formatting:** Invoke `black` to bind your work to order and uniformity.  
 
@@ -68,7 +67,7 @@ for to do so is to awaken Loki the Trickster and invite chaos upon the codebase.
 
 - Variables passed from the parent environment -> these correspond to necessary wrappers for GPU offloading, among other things.
 - Any reference material within **[app/storyboard](./app/storyboard/)** or **[app/ingest](./app/ingest/)**  
-- The sacred test file **[cuda_test.py](./app/cuda_test.py)**
+- The sacred test file **[cuda.py](./app/tests/cuda.py)**
 
 To modify these is to shatter the harmony of realms — an act of folly and fire.  
 Guard against temptation, and let wisdom temper curiosity.

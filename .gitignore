@@ -6,6 +6,7 @@
 
 # My book manuscript - can't hand it out for free :)
 app/**/symphonic*.pdf
+app/**/*chunks.json1
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

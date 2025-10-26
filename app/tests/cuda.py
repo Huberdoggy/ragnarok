@@ -1,4 +1,4 @@
-# Sanity test - nvrun correctly offloads script to dGPU
+# Sanity test - nv-run correctly offloads script to dGPU
 import time
 
 import torch

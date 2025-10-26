@@ -1,11 +1,9 @@
-# Mission (Session 1)
-
----
+# Smithing Objectives
 
 Implement a local-only ingestion + retrieval pipeline for Symphonic Prompting with no
 external paid API calls. Deliverables: PDF → chunks → embeddings → FAISS index (+
 metadata), optional local reranker, and a tiny CLI for testing retrieval. Follow the repo
-rules in [AGENTS.md](../../AGENTS.md).
+rules in **[AGENTS.md](../../AGENTS.md)**.
 
 ---
 
@@ -76,7 +74,7 @@ Create module:
   “page_start”:12,“page_end”:13,
   “preview”:"..."}, ...]
   ```
-  - Print pre&y JSON to stdout.
+  - Print pretty JSON to stdout.
 - Entry point: *nv-run python -m app.search --q “What is Symphonic Prompting?” --k 5*
 - Include a *--no-rerank* flag for ablation testing.
 
@@ -104,7 +102,7 @@ known keyword.
   - *nv-run python -m app.search --q “symphonic prompting” --k 5* → prints JSON with valid citations (ids + page spans)
 - No network calls to api.openai.com.
 - flake8 passes (no errors), black applied.
-- Add to [README.md](../../README.md) describing the three commands above.
+- Add to **[README.md](../../README.md)** describing the three commands above.
 
 #### Branch & PR:
 
