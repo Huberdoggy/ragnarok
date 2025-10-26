@@ -37,7 +37,6 @@ Handle it gently, for it is the seed of your corpus.
 
 You are to shape your code with the discipline of a master craftsman:
 
-- **When invoking Python modules:** prefix with */usr/local/bin/nv-run.sh* to guarantee discrete GPU execution.
 - **Linting:** Employ `flake8` to sweep your code of folly.  
 - **Formatting:** Invoke `black` to bind your work to order and uniformity.  
 
