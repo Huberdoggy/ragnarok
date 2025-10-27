@@ -75,7 +75,7 @@ Create module:
   “preview”:"..."}, ...]
   ```
   - Print pretty JSON to stdout.
-- Entry point: *nv-run python -m app.search --q “What is Symphonic Prompting?” --k 5*
+- Entry point: *nv-run.sh python -m app.search --q “What is Symphonic Prompting?” --k 5*
 - Include a *--no-rerank* flag for ablation testing.
 
 #### Quality gates:
@@ -97,9 +97,9 @@ known keyword.
 #### Acceptance Criteria:
 
 - Files exist and run:
-  - *nv-run python -m app.ingest_pdf* → creates **`app/data/symphonic_raw.txt`** & **...pages.jsonl**
-  - *nv-run python -m app.build_index* → creates **`app/index/faiss.index`**, **embeddings.npy**, **ids.json**, **meta.json**
-  - *nv-run python -m app.search --q “symphonic prompting” --k 5* → prints JSON with valid citations (ids + page spans)
+  - *nv-run.sh python -m app.ingest_pdf* → creates **`app/data/symphonic_raw.txt`** & **...pages.jsonl**
+  - *nv-run.sh python -m app.build_index* → creates **`app/index/faiss.index`**, **embeddings.npy**, **ids.json**, **meta.json**
+  - *nv-run.sh python -m app.search --q “symphonic prompting” --k 5* → prints JSON with valid citations (ids + page spans)
 - No network calls to api.openai.com.
 - flake8 passes (no errors), black applied.
 - Add to **[README.md](../../README.md)** describing the three commands above.
