@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import threading
 from dataclasses import dataclass
 from pathlib import Path
@@ -17,6 +18,7 @@ from typing import Dict, List, Optional, Sequence
 
 import faiss
 import numpy as np
+import torch
 from sentence_transformers import SentenceTransformer
 
 
@@ -33,6 +35,8 @@ RERANK_MODEL_NAME = "BAAI/bge-reranker-base"
 DEFAULT_TOP_K = 5
 DEFAULT_CANDIDATES = 50
 PREVIEW_CHARS = 240
+
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -189,10 +193,21 @@ class OptionalReranker:
             try:
                 from sentence_transformers import CrossEncoder
 
-                self._model = CrossEncoder(self.model_name)
-            except (
-                Exception
-            ) as exc:  # pragma: no cover - depends on local cache availability.
+                target_device = "cuda" if torch.cuda.is_available() else "cpu"
+                try:
+                    self._model = CrossEncoder(self.model_name, device=target_device)
+                    if target_device == "cuda":
+                        LOGGER.info("CrossEncoder loaded on CUDA device for reranking.")
+                except RuntimeError as runtime_exc:
+                    if target_device == "cuda" and "CUDA" in str(runtime_exc):
+                        LOGGER.warning(
+                            "Falling back to CPU CrossEncoder due to CUDA error: %s",
+                            runtime_exc,
+                        )
+                        self._model = CrossEncoder(self.model_name, device="cpu")
+                    else:  # pragma: no cover - unexpected device error
+                        raise
+            except Exception as exc:  # pragma: no cover - depends on local cache availability.
                 self._load_failure = exc
                 self._model = None
         return self._model
