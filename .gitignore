@@ -5,8 +5,10 @@
 .codex/
 
 # My book manuscript - can't hand it out for free :)
-app/**/symphonic*.pdf
-app/**/*chunks.json1
+app/**/symphonic*
+
+# Local embeddings
+app/index/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
