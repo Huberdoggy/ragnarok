@@ -37,7 +37,7 @@ Handle it gently, for it is the seed of your corpus.
 
 You are to shape your code with the discipline of a master craftsman:
 
-- **Craftsman best practices:** Always consult Context7 library **`/greensock/react`** prior to working on tasks related to visual design; this archive provides a wealth of knowledge concerning integrating the *'useGSAP'* hook for simplifying cleanup of slag and swarf.
+- **Craftsman best practices:** Always consult the Context7 library **`/greensock/react`** via the MCP inspector (`npx -y @modelcontextprotocol/inspector --cli npx @upstash/context7-mcp`) before you touch visual design; that archive details how the `useGSAP` hook keeps animation setup and cleanup pristine.
 - **When invoking Python modules:** prefix with */usr/local/bin/nv-run.sh* to guarantee discrete GPU execution.
 - **Linting:** Employ `flake8` to sweep your code of folly.  
 - **Formatting:** Invoke `black` to bind your work to order and uniformity.  

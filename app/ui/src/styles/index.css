@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-parchment text-ink font-serif antialiased;
+  background-image: theme("backgroundImage.parchment");
+  min-height: 100vh;
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display tracking-wide text-ink;
+  }
+
+  ::selection {
+    background-color: theme("colors.accentGold");
+    color: theme("colors.ink");
+  }
+}
+
+@layer components {
+  .veil {
+    background: radial-gradient(
+        circle at center,
+        rgba(248, 222, 126, 0.3),
+        transparent 55%
+      ),
+      radial-gradient(circle at top right, rgba(212, 196, 166, 0.25), transparent 45%);
+  }
+
+  .grain-overlay::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIW2NgoBfgPwAFiQLVYLRhZwAAAABJRU5ErkJggg==");
+    opacity: 0.2;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+}
