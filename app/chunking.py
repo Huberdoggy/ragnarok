@@ -28,6 +28,8 @@ DEFAULT_OVERLAP_RATIO = 0.15  # 10–15% overlap keeps continuity.
 
 @dataclass
 class Paragraph:
+    """Normalized PDF paragraph with source page and character offsets."""
+
     page: int
     text: str
     start: int
@@ -36,6 +38,8 @@ class Paragraph:
 
 @dataclass
 class Chunk:
+    """RAG chunk metadata capturing the page range and offsets."""
+
     id: str
     text: str
     page_start: int
@@ -44,6 +48,7 @@ class Chunk:
     end_char: int
 
     def to_jsonl(self) -> str:
+        """Serialise the chunk to a JSONL line."""
         record = {
             "id": self.id,
             "text": self.text,
@@ -56,6 +61,7 @@ class Chunk:
 
 
 def _load_pages(path: Path) -> List[dict]:
+    """Load the per-page JSONL file produced during ingestion."""
     pages: List[dict] = []
     with path.open("r", encoding="utf-8") as handle:
         for line in handle:
@@ -67,6 +73,7 @@ def _load_pages(path: Path) -> List[dict]:
 
 
 def _explode_paragraphs(pages: Sequence[dict]) -> List[Paragraph]:
+    """Explode page-level entries into Paragraph objects preserving offsets."""
     paragraphs: List[Paragraph] = []
     cursor = 0
     last_page_index = len(pages) - 1
@@ -102,6 +109,7 @@ def _collect_window(
     target_chars: int,
     min_chars: int,
 ) -> tuple[List[Paragraph], int, int]:
+    """Collect paragraph windows until the target size (in characters) is reached."""
     current: List[Paragraph] = []
     char_count = 0
     idx = start_idx
@@ -133,6 +141,7 @@ def _advance_start(
     char_count: int,
     overlap_ratio: float,
 ) -> int:
+    """Advance the start index while keeping a configured textual overlap."""
     if end_idx >= len(paragraphs):
         return end_idx
     overlap_chars = int(char_count * overlap_ratio)
@@ -151,6 +160,7 @@ def _yield_chunks(
     min_chars: int,
     overlap_ratio: float,
 ) -> Iterator[Chunk]:
+    """Yield chunk definitions using a sliding window over Paragraph instances."""
     if not paragraphs:
         return
 
@@ -190,6 +200,7 @@ def build_chunks(
     min_chars: int = DEFAULT_MIN_CHARS,
     overlap_ratio: float = DEFAULT_OVERLAP_RATIO,
 ) -> List[Chunk]:
+    """Build chunk metadata from the page JSONL produced during ingestion."""
     pages = _load_pages(pages_path)
     paragraphs = _explode_paragraphs(pages)
     if not paragraphs:
@@ -205,6 +216,7 @@ def build_chunks(
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse CLI arguments for chunk generation."""
     parser = argparse.ArgumentParser(
         description="Chunk Symphonic Prompting text for retrieval."
     )
@@ -227,6 +239,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
+    """CLI entrypoint that loads pages and writes chunk JSONL data."""
     args = parse_args()
     build_chunks(
         pages_path=args.pages_path,

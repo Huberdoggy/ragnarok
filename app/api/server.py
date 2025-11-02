@@ -91,9 +91,7 @@ def search_endpoint(payload: SearchRequest) -> List[RetrievalResult]:
             any other unexpected failure.
     """
     try:
-        return retrieve(
-            query=payload.query, top_k=payload.top_k, rerank=payload.rerank
-        )
+        return retrieve(query=payload.query, top_k=payload.top_k, rerank=payload.rerank)
     except FileNotFoundError as exc:
         LOGGER.exception("Retrieval artifacts missing.")
         raise HTTPException(status_code=503, detail=str(exc)) from exc

@@ -36,6 +36,7 @@ DEFAULT_BATCH_SIZE = 16
 
 
 def _load_chunks(path: Path) -> List[dict]:
+    """Load JSONL chunk metadata into memory from ``path``."""
     chunks: List[dict] = []
     with path.open("r", encoding="utf-8") as handle:
         for line in handle:
@@ -47,10 +48,12 @@ def _load_chunks(path: Path) -> List[dict]:
 
 
 def _prepare_texts(chunks: Sequence[dict]) -> List[str]:
+    """Prefix chunk text with the e5 instruction token prior to embedding."""
     return [f"passage: {chunk['text']}" for chunk in chunks]
 
 
 def _load_model(model_name: str) -> SentenceTransformer:
+    """Instantiate the embedding model on GPU when available, else CPU."""
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model = SentenceTransformer(model_name, device=device)
     return model
@@ -65,6 +68,7 @@ def build_embeddings(
     model_name: str = DEFAULT_MODEL_NAME,
     batch_size: int = DEFAULT_BATCH_SIZE,
 ) -> None:
+    """Encode all chunks, persist embeddings, and build the FAISS index."""
     chunks = _load_chunks(chunks_path)
     if not chunks:
         raise ValueError(f"No chunks found at {chunks_path}. Run app.chunking first.")
@@ -112,6 +116,7 @@ def build_embeddings(
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse CLI arguments for the index builder."""
     parser = argparse.ArgumentParser(
         description="Build FAISS index for Symphonic Prompting chunks."
     )
@@ -126,6 +131,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
+    """CLI entrypoint: parse arguments and kick off embedding build."""
     args = parse_args()
     build_embeddings(
         chunks_path=args.chunks_path,

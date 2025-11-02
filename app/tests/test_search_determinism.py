@@ -15,6 +15,7 @@ def _fingerprint(results: List[dict]) -> List[Tuple[str, float]]:
 
 @pytest.mark.skipif(not ARTIFACT_STORE.is_ready(), reason="retrieval artifacts not built")
 def test_search_repeatable_without_rerank() -> None:
+    """Baseline FAISS results should be deterministic when reranking is disabled."""
     query = "Symphonic Prompting doctrine"
     first = search(query, top_k=4, rerank=False)
     second = search(query, top_k=4, rerank=False)
@@ -23,6 +24,7 @@ def test_search_repeatable_without_rerank() -> None:
 
 @pytest.mark.skipif(not ARTIFACT_STORE.is_ready(), reason="retrieval artifacts not built")
 def test_search_repeatable_with_rerank_bridge() -> None:
+    """Reranked retrieval should be stable across repeated queries."""
     query = "Path of discovery"
     first = retrieve(query, top_k=4, rerank=True)
     second = retrieve(query, top_k=4, rerank=True)
@@ -31,6 +33,7 @@ def test_search_repeatable_with_rerank_bridge() -> None:
 
 @pytest.mark.skipif(not ARTIFACT_STORE.is_ready(), reason="retrieval artifacts not built")
 def test_search_results_are_sorted_and_unique() -> None:
+    """Returned scores should be monotonic and chunks must not repeat."""
     results = search("Ken Burns drift", top_k=5, rerank=False)
     scores = [float(item["score"]) for item in results]
     assert scores == sorted(scores, reverse=True)

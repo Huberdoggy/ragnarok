@@ -72,6 +72,7 @@ class ArtifactStore:
         self._model: Optional[SentenceTransformer] = None
 
     def is_ready(self) -> bool:
+        """Return True when the embeddings, ids, and FAISS index exist."""
         return (
             self.chunks_path.exists()
             and self.ids_path.exists()
@@ -79,6 +80,7 @@ class ArtifactStore:
         )
 
     def _load_chunks(self) -> None:
+        """Populate the in-memory lookup for chunk metadata."""
         if self._chunk_lookup is not None and self._ordered_chunks is not None:
             return
 
@@ -102,12 +104,14 @@ class ArtifactStore:
         self._chunk_lookup = chunk_lookup
 
     def _load_ids(self) -> None:
+        """Load the on-disk list of chunk ids in index order."""
         if self._ids is not None:
             return
         ids = json.loads(self.ids_path.read_text(encoding="utf-8"))
         self._ids = ids
 
     def _ensure_index(self) -> None:
+        """Load the FAISS index into memory if needed."""
         if self._index is not None:
             return
         index = faiss.read_index(str(self.faiss_path))
@@ -116,6 +120,7 @@ class ArtifactStore:
         self._index = index
 
     def _ensure_ordered_chunks(self) -> None:
+        """Build an ordered list of chunk records matching FAISS vector order."""
         if self._ordered_chunks is not None:
             return
         self._load_chunks()
@@ -131,12 +136,14 @@ class ArtifactStore:
         self._ordered_chunks = ordered
 
     def _ensure_model(self) -> None:
+        """Load the embedding model used for query encoding."""
         if self._model is not None:
             return
         self._model = SentenceTransformer(self.embed_model_name)
 
     @property
     def index(self) -> faiss.IndexFlatIP:
+        """Return the FAISS index, loading it lazily if necessary."""
         with self._lock:
             self._ensure_index()
             assert self._index is not None
@@ -144,6 +151,7 @@ class ArtifactStore:
 
     @property
     def ordered_chunks(self) -> Sequence[ChunkRecord]:
+        """Return chunk records sorted to align with FAISS vector storage."""
         with self._lock:
             self._ensure_ordered_chunks()
             assert self._ordered_chunks is not None
@@ -151,12 +159,14 @@ class ArtifactStore:
 
     @property
     def model(self) -> SentenceTransformer:
+        """Return the embedding model instance."""
         with self._lock:
             self._ensure_model()
             assert self._model is not None
             return self._model
 
     def encode_query(self, query: str) -> np.ndarray:
+        """Encode a natural-language query into the shared embedding space."""
         model = self.model
         embedding = model.encode(
             [f"query: {query}"],
@@ -177,10 +187,12 @@ class OptionalReranker:
         self._lock = threading.Lock()
 
     def is_available(self) -> bool:
+        """Return True when the cross-encoder model is loaded."""
         model = self._get_model()
         return model is not None
 
     def _get_model(self):
+        """Load and cache the cross-encoder model if possible."""
         if self._model is not None:
             return self._model
         if self._load_failure is not None:
@@ -207,12 +219,15 @@ class OptionalReranker:
                         self._model = CrossEncoder(self.model_name, device="cpu")
                     else:  # pragma: no cover - unexpected device error
                         raise
-            except Exception as exc:  # pragma: no cover - depends on local cache availability.
+            except (
+                Exception
+            ) as exc:  # pragma: no cover - depends on local cache availability.
                 self._load_failure = exc
                 self._model = None
         return self._model
 
     def rerank(self, query: str, candidates: Sequence[dict], top_k: int) -> List[dict]:
+        """Rerank FAISS candidates with the cross-encoder, falling back gracefully."""
         model = self._get_model()
         if model is None:
             return list(candidates)[:top_k]
@@ -233,6 +248,7 @@ RERANKER = OptionalReranker()
 def _make_candidates(
     indices: Sequence[int], scores: Sequence[float], store: ArtifactStore
 ) -> List[dict]:
+    """Construct candidate dictionaries from FAISS indices and scores."""
     ordered_chunks = store.ordered_chunks
     candidates: List[dict] = []
     for rank, (idx, score) in enumerate(zip(indices, scores)):
@@ -262,6 +278,7 @@ def search(
     rerank: bool = True,
     store: ArtifactStore = ARTIFACT_STORE,
 ) -> List[dict]:
+    """Retrieve semantic matches for ``query`` using FAISS and optional reranking."""
     if top_k <= 0:
         raise ValueError("top_k must be positive.")
     if not store.is_ready():
@@ -307,6 +324,7 @@ def search(
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse CLI arguments for the search utility."""
     parser = argparse.ArgumentParser(description="Search the Symphonic Prompting index.")
     parser.add_argument(
         "--q", "--query", dest="query", required=True, help="Natural language query."
@@ -328,6 +346,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
+    """CLI entrypoint for running semantic search from the shell."""
     args = parse_args()
     results = search(args.query, top_k=args.k, rerank=not args.no_rerank)
     if args.pretty:
