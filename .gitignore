@@ -1,7 +1,7 @@
 
 # Configs
 .vscode/
-# Currently irrelevant - nesting beyond CODEX_HOME doesn't seem to be supported
+# Currently nesting .TOMLs beyond CODEX_HOME doesn't seem well supported, aside from MCP server declarations
 .codex/
 node_modules/
 
